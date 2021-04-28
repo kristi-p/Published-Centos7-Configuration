@@ -1,0 +1,35 @@
+Configure Mod_security
+
+Install Mod_Security
+	yum install mod_security
+	
+Load the module in httpd.conf
+	LoadModule security2_module modules/mod_security2.so
+
+Installing A Core Rule Set and Configuring Mod_Security
+	# mkdir /etc/httpd/crs-tecmint
+	# cd /etc/httpd/crs-tecmint
+	# wget -c https://github.com/SpiderLabs/owasp-modsecurity-crs/archive/v3.2.0.tar.gz -O master
+	
+Untar the CRS file and change the name of the directory 
+	# tar xzf master
+	# mv owasp-modsecurity-crs-3.2.0 owasp-modsecurity-crs
+	
+Copy the sample file with rules (owasp-modsecurity-crs/modsecurity_crs_10_setup.conf.example) into another file without the .example extension
+	# cd owasp-modsecurity-crs/
+	# cp crs-setup.conf.example crs-setup.conf 
+	
+Tell Apache to use this file along with the module by inserting the following lines in the web server’s main configuration file /etc/httpd/conf/httpd.conf file
+	<IfModule security2_module>
+			Include crs-tecmint/owasp-modsecurity-crs/crs-setup.conf
+			Include crs-tecmint/owasp-modsecurity-crs/rules/*.conf
+	</IfModule>
+
+Create our own configuration file within the /etc/httpd/modsecurity.d directory 
+	<IfModule mod_security2.c>
+		SecRuleEngine On
+		SecRequestBodyAccess On
+		SecResponseBodyAccess On 
+		SecResponseBodyMimeType text/plain text/html text/xml application/octet-stream 
+		SecDataDir /tmp
+	</IfModule>

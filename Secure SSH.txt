@@ -1,0 +1,52 @@
+Allow Only SSH Protocol 2
+	Open /etc/ssh/sshd_config and ensure the following line exists:
+		Protocol 2
+Limit Users’ SSH Access
+	Open /etc/ssh/sshd_config and add:
+		DenyUsers USER1 USER2
+Disable SSH Support for .rhosts Files
+	add or correct the following line in /etc/ssh/sshd_config:
+		IgnoreRhosts yes
+Disable Host-Based Authentication
+	add or correct the following line in /etc/ssh/sshd_config:
+		HostbasedAuthentication no
+Disable SSH Access via Empty Passwords
+	open /etc/ssh/sshd_config and ensure the following line exists:
+		PermitEmptyPasswords no
+Do Not Allow SSH Environment Options
+	add or correct the following line in /etc/ssh/sshd_config:
+		PermitUserEnvironment no
+Add or change the file /etc/ssh/sshd_config to the correct port
+	Port new_port
+	
+su semanage port -a -t ssh_port_t -p tcp new_port
+				
+Add another user and disable root (https://mediatemple.net/community/products/dv/204643810/how-do-i-disable-ssh-login-for-the-root-user)
+	adduser new_username
+verify that it is created
+	id new_username 
+insert the password for the new account
+	passwd new_username 
+Add this username to the sudo file 
+	echo 'new_username ALL=(ALL) ALL' >> /etc/sudoers
+Switch to the new user from the root account
+	su new_username
+Change directory to home
+	cd
+Make .ssh directory
+	mkdir .ssh
+Change into .ssh directory and create authorized_keys file
+	nano authorized_keys
+Create a public/private key in Putty with a passphrase
+Paste your public key into the authorized_keys file
+	chmod 700 ~/.ssh
+	chmod 600 ~/.ssh/authorized_keys
+Restart sshd
+	systemctl restart sshd
+!!!!!!!Test before disabling root!!!!!!!		
+		
+Disable SSH Root Login(****ONLY if you have another su already created****)  
+open /etc/ssh/sshd_config and ensure the following line exists:
+	PermitRootLogin no
+Restart sshd
+	systemctl restart sshd.service

@@ -1,0 +1,23 @@
+Install scriptreplay 
+		yum install util-linux -y
+
+Make all the sessions log to /var/log/scriptreplay
+	Add this to etc/profile file 
+		#……………………………………………………
+		if [ "x$SESSION_RECORD" = "x" ]
+		then
+		timestamp=$(date +%d-%m-%Y-%T)
+		session_log=/var/log/scriptreplay/session.$USER.$$.$timestamp
+		SESSION_RECORD=started
+		export SESSION_RECORD
+		script -t -f -q 2>${session_log}.timing $session_log
+		exit
+		fi
+		#……………………………………………………
+	mkdir /var/log/scriptreplay
+	chmod 777 /var/log/scriptreplay/
+	
+How to use
+	script --timing=timing.txt session.log  (to start the logging of the commands)
+	exit to close the session of logging
+	scriptreplay --timing=timing.txt session.log (to replay a session)

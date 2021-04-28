@@ -1,0 +1,54 @@
+Configure Apache
+
+Install Apache
+	yum install httpd
+	systemctl start httpd
+	systemctl enable httpd
+	systemctl status httpd
+	
+Harden Apache
+	Restrict access to root directory  by setting the following in the httpd.conf
+		<Directory />
+			Options None
+			Order deny,allow
+			Deny from all
+		</Directory>
+	Don’t allow .htaccess
+		<Directory />
+			Options None
+			AllowOverride None
+			Order deny,allow
+			Deny from all
+		</Directory>
+	
+Don’t display or send Apache version in the requests by setting the following in the httpd.conf
+	ServerSignature Off
+	ServerTokens Prod
+
+	TraceEnable off
+	FileETag None
+	Header edit Set-Cookie ^(.*)$ $1;HttpOnly;Secure
+	Header set X-XSS-Protection "1; mode=block"
+	Header always append X-Frame-Options SAMEORIGIN
+	Timeout 60
+
+	#block libwww-perl attacks
+	RewriteEngine On
+	
+	RewriteCond %{HTTP_USER_AGENT} libwww-perl.*
+	RewriteRule .* – [F,L]
+	
+Disable Directory Listing
+	<Directory /var/www/html>
+		Options -Indexes
+	</Directory>
+
+Disable Unnecessary Modules
+	grep LoadModule /etc/httpd/conf/httpd.conf
+
+Use Allow and Deny to Restrict access to Directories
+	<Directory />
+	   Options None
+	   Order deny,allow
+	   Deny from all
+	</Directory>

@@ -1,0 +1,35 @@
+Firewalld Configuration
+
+Disable all the zones that you are not going to use by removing all the sources and interfaces from there
+		
+Block firewall changes by the applications
+	# firewall-cmd --lockdown-on
+	# firewall-cmd --lockdown-off
+To find the status of the lockdown
+	firewall-cmd --query-lockdown
+	
+Manage Ports for Zones
+	sudo firewall-cmd --zone=public --permanent --list-ports
+	sudo firewall-cmd --zone=internal --permanent --add-port=443/tcp
+	sudo firewall-cmd --zone=internal --permanent --remove-port=443/tcp
+
+Manage Services for Zones
+	firewall-cmd --zone=public --permanent --list-services
+	firewall-cmd --zone=internal --permanent --add-service=https
+	firewall-cmd --zone=public --permanent --remove-service=http
+	
+Manage Interfaces on Zones
+	firewall-cmd --zone=public --remove-interface=venet0
+	firewall-cmd --zone=public --add-interface=venet0
+	
+Reload Configuration
+	firewall-cmd --reload
+	
+Get the list of active zones
+	firewall-cmd --get-active-zones
+	firewall-cmd --list-all-zones
+	
+Block echo-reply to any of the active zones
+	firewall-cmd --zone=public --add-icmp-block=echo-reply
+Test with
+	firewall-cmd --zone=public --query-icmp-block=echo-reply

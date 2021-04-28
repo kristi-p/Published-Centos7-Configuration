@@ -1,0 +1,41 @@
+Configure Mod_Evasive
+
+Install Mod_evasive
+	yum install mod_evasive
+		
+Load the module in httpd.conf
+	LoadModule evasive20_module modules/mod_evasive24.so
+	
+Create the log location
+	mkdir /var/log/mod_evasive
+	chown -R apache:apache /var/log/mod_evasive
+	
+Configuring Mod_Evasive
+	<IfModule mod_evasive24.c>
+		DOSHashTableSize    3097
+		DOSPageCount        2
+		DOSSiteCount        50
+		DOSPageInterval     1
+		DOSSiteInterval     1
+		DOSBlockingPeriod   10
+		DOSWhitelist    111.111.111.111
+		DOSWhitelist    222.222.222.222
+		DOSLogDir           "/var/log/mod_evasive"
+	</IfModule>
+	
+Testing mod_evasive
+
+Install Perl if it is not installed
+	yum install -y perl
+
+The test script is installed with mod_evasive at the following location:
+	/usr/share/doc/mod_evasive-1.10.1/test.pl
+	
+To execute the script, run:
+	perl /usr/share/doc/mod_evasive-1.10.1/test.pl
+	
+tailf /var/log/messages
+ 
+It should show a line similar to:
+
+Jul 29 00:11:18 servername mod_evasive[18290]: Blacklisting address 127.0.0.1: possible DoS attack.

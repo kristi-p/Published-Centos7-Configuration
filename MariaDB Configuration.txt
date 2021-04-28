@@ -1,0 +1,43 @@
+Install and configure Mariadb
+
+Install mariadb (https://www.tecmint.com/install-mariadb-in-centos-7/)
+Create /etc/yum.repos.d/MariaDB.repo  and add the following: 
+	[mariadb]
+	name = MariaDB
+	baseurl = http://yum.mariadb.org/10.1/centos7-amd64
+	gpgkey=https://yum.mariadb.org/RPM-GPG-KEY-MariaDB
+	gpgcheck=1
+Install MariaDB 
+	yum install MariaDB-server MariaDB-client -y
+# systemctl start mariadb
+# systemctl enable mariadb
+# systemctl status mariadb
+# mysql_secure_installation
+
+
+SET PASSWORD FOR 'gymroot'@'localhost' = PASSWORD('passwordUwant');
+UPDATE mysql.user SET authentication_string = PASSWORD('passwordUwant') WHERE User = 'gymroot' AND Host = 'localhost';
+SET PASSWORD FOR user@localhost =  PASSWORD('passwordUwant') ;
+
+select user, host, password, plugin from mysql.user;
+CREATE USER 'new_Username'@'access_IP' IDENTIFIED BY 'passwordUwant';
+
+GRANT SELECT,INSERT,UPDATE,CREATE TEMPORARY TABLES,DELETE,EXECUTE ON database.* TO 'new_Username'@'access_IP'IDENTIFIED BY 'passwordUwant';	
+FLUSH PRIVILEGES;
+
+Edit /etc/my.cnf and add the following
+	[mysqld]
+	bind-address=0.0.0.0
+	event_scheduler=on
+	user=mysql
+	default-time-zone = '+02:00' 
+	port=port_to_bind
+	
+Each application that uses MySQL should have its own user that only has limited privileges and only has access to the databases it needs to run.
+Never use ALL TO .*.
+Never use % for a hostname
+Application user permissions should be restrictive as possible
+Only allow super privileges to dba accounts, and localhost
+Never ever give users global privileges, except for root, backup user, monitoring user, replication user
+Take extra caution when granting SUPER or FILE privileges: SUPER can modify runtime configuration and become other users, FILE allows reading or writing files as MySQL process		
+Create one different user for every application granting only CRUD operations

@@ -1,0 +1,41 @@
+Configure Fail2Ban
+
+Install epel-release
+	yum install epel-release
+Install fail2Ban
+	yum install fail2ban-firewalld -y
+	yum install fail2ban fail2ban-systemd
+	
+Copy /etc/fail2ban/jail.conf to /etc/fail2ban/jail.local
+	cp -pf /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+	
+Edit /etc/fail2ban/jail.local
+	ignoreip = 127.0.0.1 YOUR_IP_ADDRESS
+	banaction = firewallcmd-ipset
+	bantime  = 600
+	findtime  = 600
+	maxretry = 5
+	
+Add A Jail File To Protect SSH Access
+	touch /etc/fail2ban/jail.d/sshd.local && chmod +x /etc/fail2ban/jail.d/sshd.local
+	 add the following lines of code to /etc/fail2ban/jail.d/sshd.local
+		[sshd]
+		enabled = true
+		port = ssh
+		#action = firewallcmd-ipset
+		logpath = %(sshd_log)s
+		maxretry = 5
+		bantime = 86400
+
+To get a list of jails status
+	fail2ban-client status
+	
+Unbanning An IP Address
+	fail2ban-client set sshd unbanip YOUR_IP_ADDRESS
+
+systemctl restart firewalld
+systemctl start fail2ban.service
+systemctl status fail2ban.service
+systemctl enable fail2ban.service
+	
+To create regex rules for putting attacks in jail  (https://www.linode.com/docs/security/using-fail2ban-to-secure-your-server-a-tutorial/)
